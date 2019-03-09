@@ -57,10 +57,10 @@ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
  */
 static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
 {
-#if 0
+#if 1
 	unsigned long long cycles = get_cycles64();
-	DBGMSG("RDTIME %llu", cycles);
-	return cycles;
+	//DBGMSG("RDTIME %llu", cycles);
+	return cycles / 100;
 #else
 	static unsigned long long fake_timer = 0;
 	fake_timer += 1000000;

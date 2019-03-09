@@ -40,9 +40,9 @@ static inline uint64_t get_cycles64(void)
 	u32 lo, hi, tmp;
 	__asm__ __volatile__ (
 		"1:\n"
-		"rdtimeh %0\n"
-		"rdtime %1\n"
-		"rdtimeh %2\n"
+		"rdcycleh %0\n"
+		"rdcycle %1\n"
+		"rdcycleh %2\n"
 		"bne %0, %2, 1b"
 		: "=&r" (hi), "=&r" (lo), "=&r" (tmp));
 	return ((u64)hi << 32) | lo;
