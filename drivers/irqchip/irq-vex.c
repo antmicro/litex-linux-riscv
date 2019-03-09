@@ -18,13 +18,13 @@
 static void vex_enable_irq(int num, int enable)
 {
     u32 mask = csr_read(0xBC0);
-    DBGMSG("vexirq %s irq %d", enable? "enable" : "disable",  num);
+    //DBGMSG("vexirq %s irq %d", enable? "enable" : "disable",  num);
     if(enable) {
         csr_write(0xBC0, mask | (1 << num));
     } else {
         csr_write(0xBC0, mask & ~(1 << num));
     }
-    DBGMSG("done!");
+    //DBGMSG("done!");
 
 }
 
@@ -32,10 +32,10 @@ static int vex_get_irq(void)
 {
     int i;
     u32 pend = csr_read(0xFC0);
-    DBGMSG("vexirq get irq");
+    //DBGMSG("vexirq get irq");
     for(i = 31; i >= 0; i--) {
         if(pend & (1 << i)) {
-            DBGMSG("vexirq get irq found %d", i);
+            //DBGMSG("vexirq get irq found %d", i);
             return i;
         }
     }
@@ -79,11 +79,11 @@ static struct irq_domain *vex_irqdomain;
 static void vex_handle_irq(struct pt_regs *regs)
 {
 	irq_hw_number_t hwirq;
-    DBGMSG("vexirq handle irq");
+    //DBGMSG("vexirq handle irq");
 
 	while ((hwirq = vex_get_irq())!= -1) {
 		int irq = irq_find_mapping(vex_irqdomain, hwirq);
-        DBGMSG("vexirq handle %d", hwirq);
+        //DBGMSG("vexirq handle %d", hwirq);
         vex_enable_irq(hwirq, 0);
 
 		if (unlikely(irq <= 0))

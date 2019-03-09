@@ -59,7 +59,7 @@ DBG();
 
 static inline void sbi_set_timer(uint64_t stime_value)
 {
-DBG();
+DBGMSG("set_timer %llu", stime_value);
 #if 0
 #if __riscv_xlen == 32
 	SBI_CALL_2(SBI_SET_TIMER, stime_value, stime_value >> 32);

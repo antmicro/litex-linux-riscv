@@ -23,14 +23,14 @@ extern void __fstate_restore(struct task_struct *restore_from);
 
 static inline void __fstate_clean(struct pt_regs *regs)
 {
-DBG();
+//DBG();
 	regs->sstatus |= (regs->sstatus & ~(SR_FS)) | SR_FS_CLEAN;
 }
 
 static inline void fstate_save(struct task_struct *task,
 			       struct pt_regs *regs)
 {
-DBG();
+//DBG();
 	if ((regs->sstatus & SR_FS) == SR_FS_DIRTY) {
 		__fstate_save(task);
 		__fstate_clean(regs);
@@ -40,7 +40,7 @@ DBG();
 static inline void fstate_restore(struct task_struct *task,
 				  struct pt_regs *regs)
 {
-DBG();
+//DBG();
 	if ((regs->sstatus & SR_FS) != SR_FS_OFF) {
 		__fstate_restore(task);
 		__fstate_clean(regs);

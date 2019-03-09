@@ -9,6 +9,7 @@
 #include <linux/delay.h>
 #include <linux/irq.h>
 #include <asm/sbi.h>
+#include <utils/puts.h>
 
 /*
  * All RISC-V systems have a timer attached to every hart.  These timers can be
@@ -45,7 +46,9 @@ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
  */
 static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
 {
-	return get_cycles64();
+	unsigned long long cycles = get_cycles64();
+	DBGMSG("RDTIME %llu", cycles);
+	return cycles;
 }
 
 static DEFINE_PER_CPU(struct clocksource, riscv_clocksource) = {
