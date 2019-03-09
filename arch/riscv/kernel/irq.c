@@ -33,6 +33,7 @@ asmlinkage void __irq_entry do_IRQ(struct pt_regs *regs, unsigned long cause)
 	irq_enter();
 	switch (cause & ~INTERRUPT_CAUSE_FLAG) {
 	case INTERRUPT_CAUSE_TIMER:
+		//DBG();
 		riscv_timer_interrupt();
 		break;
 #ifdef CONFIG_SMP

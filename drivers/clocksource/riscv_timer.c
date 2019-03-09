@@ -23,12 +23,23 @@
  * operations on the current hart.  There is guaranteed to be exactly one timer
  * per hart on all RISC-V systems.
  */
+#define TIMER0_BASE 0xe0002800
 
 static int riscv_clock_next_event(unsigned long delta,
 		struct clock_event_device *ce)
 {
+	//DBGMSG("set_timer %lu\n", delta);
+	delta *= 100;
+	volatile uint32_t *timer = (uint32_t*)TIMER0_BASE;
+	timer[14] = 0;
 	csr_set(sie, SIE_STIE);
-	sbi_set_timer(get_cycles64() + delta);
+	timer[8] = 0;
+	timer[0] = (delta >> 24) & 0xFF;
+	timer[1] = (delta >> 16) & 0xFF;
+	timer[2] = (delta >>  8) & 0xFF;
+	timer[3] = (delta      ) & 0xFF;
+	timer[16] = 1;
+	timer[8] = 1;
 	return 0;
 }
 
@@ -46,9 +57,16 @@ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
  */
 static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
 {
+#if 0
 	unsigned long long cycles = get_cycles64();
 	DBGMSG("RDTIME %llu", cycles);
 	return cycles;
+#else
+	static unsigned long long fake_timer = 0;
+	fake_timer += 1000000;
+	//DBGMSG("RDTIME [fake] %llu", fake_timer);
+	return fake_timer;
+#endif
 }
 
 static DEFINE_PER_CPU(struct clocksource, riscv_clocksource) = {
@@ -79,8 +97,10 @@ static int riscv_timer_dying_cpu(unsigned int cpu)
 /* called directly from the low-level interrupt handler */
 void riscv_timer_interrupt(void)
 {
-	struct clock_event_device *evdev = this_cpu_ptr(&riscv_clock_event);
+	volatile uint32_t *timer = (uint32_t*)TIMER0_BASE;
+	timer[16] = 0;
 
+	struct clock_event_device *evdev = this_cpu_ptr(&riscv_clock_event);
 	csr_clear(sie, SIE_STIE);
 	evdev->event_handler(evdev);
 }
