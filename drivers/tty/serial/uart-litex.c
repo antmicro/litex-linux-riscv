@@ -204,6 +204,7 @@ static int litex_uart_startup(struct uart_port *port)
 	int ret;
 	unsigned int r;
 DBG();
+#if 1
 	ret = request_irq(port->irq, litex_uart_isr, 0 /* IRQF_TRIGGER_LOW */ /* IRQF_SHARED */ /* IRQF_TRIGGER_RISING */,
 			  "litex_uart", port);
 	if (ret && 0) {
@@ -214,16 +215,20 @@ DBG();
 		return 0;
 		return ret;
 	}
-
+#endif
+DBG();
 	r = uart_in32(LITEX_UART_EV_PENDING, port);
 	if (r != 0) {
+		DBG();
 		/* Clear pending events */
 		uart_out32(r, LITEX_UART_EV_PENDING, port);
 	}
+DBG();
 	r = uart_in32(LITEX_UART_EV_ENABLE, port);
+DBG();
 	if (r == 0)
 		uart_out32(0x3, LITEX_UART_EV_ENABLE, port);
-
+DBG();
 	return 0;
 }
 

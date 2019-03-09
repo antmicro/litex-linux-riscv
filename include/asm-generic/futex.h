@@ -94,8 +94,10 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	u32 val;
 DBGMSG("going to preemtr");
 	preempt_disable();
-	if (uaddr == 0)
+	if (uaddr == 0) {
 		MSG(2,"preempted  uaddr=%X!", (uint32_t)uaddr);
+		return -EFAULT;
+	}
 	if (unlikely(get_user(val, uaddr) != 0)) {
 	DBG();
 		preempt_enable();

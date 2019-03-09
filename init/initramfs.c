@@ -477,6 +477,8 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
 		this_header = 0;
 		decompress = decompress_method(buf, len, &compress_name);
 		pr_debug("Detected %s compressed data\n", compress_name);
+		DBGMSG(" compress %s ", compress_name);
+
 		if (decompress) {
 			int res = decompress(buf, len, NULL, flush_buffer, NULL,
 				   &my_inptr, error);
@@ -627,6 +629,7 @@ static int __init populate_rootfs(void)
 		fd = ksys_open("/initrd.image",
 			      O_WRONLY|O_CREAT, 0700);
 		if (fd >= 0) {
+			DBGMSG(" xwrite %d\n", (int)(initrd_end - initrd_start));
 			ssize_t written = xwrite(fd, (char *)initrd_start,
 						initrd_end - initrd_start);
 

@@ -24,6 +24,7 @@ static void vex_enable_irq(int num, int enable)
     } else {
         csr_write(0xBC0, mask & ~(1 << num));
     }
+    DBGMSG("done!");
 
 }
 
