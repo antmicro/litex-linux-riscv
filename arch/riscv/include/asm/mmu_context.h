@@ -72,7 +72,7 @@ static inline void flush_icache_deferred(struct mm_struct *mm)
 static inline void switch_mm(struct mm_struct *prev,
 	struct mm_struct *next, struct task_struct *task)
 {
-	DBGMSG("beginning, prev = %X, next=%X", (uint32_t)prev, (uint32_t)next);
+	//DBGMSG("beginning, prev = %X, next=%X", (uint32_t)prev, (uint32_t)next);
 	if (likely(prev != next)) {
 		/*
 		 * Mark the current MM context as inactive, and the next as
@@ -89,7 +89,7 @@ static inline void switch_mm(struct mm_struct *prev,
 		 * name to support binutils 2.29 which doesn't know about the
 		 * privileged ISA 1.10 yet.
 		 */
-		DBGMSG("Changing sptbr from %X to %X", csr_read(sptbr), virt_to_pfn(next->pgd) | SATP_MODE);
+		//DBGMSG("Changing sptbr from %X to %X", csr_read(sptbr), virt_to_pfn(next->pgd) | SATP_MODE);
 		csr_write(sptbr, virt_to_pfn(next->pgd) | SATP_MODE); // TODO
 		DBG();
 		local_flush_tlb_all();

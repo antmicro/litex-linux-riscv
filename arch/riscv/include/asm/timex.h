@@ -23,8 +23,9 @@ static inline cycles_t get_cycles_inline(void)
 	cycles_t n;
 
 	__asm__ __volatile__ (
-		"rdtime %0"
-		: "=r" (n));
+		"rdcycle %0"
+		: "=&r" (n));
+	//DBGMSG("%lu", n);
 	return n;
 }
 #define get_cycles get_cycles_inline

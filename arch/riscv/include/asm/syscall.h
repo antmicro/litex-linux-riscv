@@ -20,7 +20,7 @@
 
 #include <linux/sched.h>
 #include <linux/err.h>
-
+#include <utils/puts.h>
 /* The array of function pointers for syscalls. */
 extern void *sys_call_table[];
 
@@ -32,6 +32,7 @@ extern void *sys_call_table[];
 static inline int syscall_get_nr(struct task_struct *task,
 				 struct pt_regs *regs)
 {
+	DBGMSG("syscall nr %d", regs->a7);
 	return regs->a7;
 }
 
@@ -66,6 +67,7 @@ static inline void syscall_set_return_value(struct task_struct *task,
 					    struct pt_regs *regs,
 					    int error, long val)
 {
+	DBGMSG("syscall ret %d %d", error, val);
 	regs->a0 = (long) error ?: val;
 }
 
@@ -77,6 +79,7 @@ static inline void syscall_get_arguments(struct task_struct *task,
 	BUG_ON(i + n > 6);
 	if (i == 0) {
 		args[0] = regs->orig_a0;
+		DBGMSG("args[0] = %d", args[0]);
 		args++;
 		i++;
 		n--;

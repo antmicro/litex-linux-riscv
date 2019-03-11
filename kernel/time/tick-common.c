@@ -121,7 +121,7 @@ void tick_handle_periodic(struct clock_event_device *dev)
 		 * periodic mode:
 		 */
 		next = ktime_add(next, tick_period);
-
+		// DBGMSG("%lld %lld %lld", ktime_get(), next, tick_period);
 		if (!clockevents_program_event(dev, next, false))
 			return;
 		/*

@@ -29,17 +29,17 @@ static int riscv_clock_next_event(unsigned long delta,
 		struct clock_event_device *ce)
 {
 	//DBGMSG("set_timer %lu\n", delta);
-	delta *= 100;
 	volatile uint32_t *timer = (uint32_t*)TIMER0_BASE;
-	timer[14] = 0;
-	csr_set(sie, SIE_STIE);
-	timer[8] = 0;
-	timer[0] = (delta >> 24) & 0xFF;
+	timer[16] = 0; // disable event
+	timer[8] = 0; // disable timer
+	timer[15] = 1; // clear pending event
+	timer[0] = (delta >> 24) & 0xFF; //set load value
 	timer[1] = (delta >> 16) & 0xFF;
 	timer[2] = (delta >>  8) & 0xFF;
 	timer[3] = (delta      ) & 0xFF;
-	timer[16] = 1;
-	timer[8] = 1;
+	timer[16] = 1; //enable event
+	timer[8] = 1; //enable timer
+	csr_set(sie, SIE_STIE); //enable timer interrupt (S-mode)
 	return 0;
 }
 
@@ -59,11 +59,11 @@ static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
 {
 #if 1
 	unsigned long long cycles = get_cycles64();
-	//DBGMSG("RDTIME %llu", cycles);
-	return cycles / 100;
+	//DBGMSG("RDTIME %llx", cycles);
+	return cycles;
 #else
 	static unsigned long long fake_timer = 0;
-	fake_timer += 1000000;
+	fake_timer += 10000;
 	//DBGMSG("RDTIME [fake] %llu", fake_timer);
 	return fake_timer;
 #endif
@@ -72,7 +72,7 @@ static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
 static DEFINE_PER_CPU(struct clocksource, riscv_clocksource) = {
 	.name		= "riscv_clocksource",
 	.rating		= 300,
-	.mask		= CLOCKSOURCE_MASK(BITS_PER_LONG),
+	.mask		= CLOCKSOURCE_MASK(64),
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 	.read		= riscv_clocksource_rdtime,
 };
@@ -82,9 +82,9 @@ static int riscv_timer_starting_cpu(unsigned int cpu)
 	struct clock_event_device *ce = per_cpu_ptr(&riscv_clock_event, cpu);
 
 	ce->cpumask = cpumask_of(cpu);
-	clockevents_config_and_register(ce, riscv_timebase, 100, 0x7fffffff);
+	clockevents_config_and_register(ce, riscv_timebase, 10, 0x7fffffff);
 
-	csr_set(sie, SIE_STIE);
+	//csr_set(sie, SIE_STIE);
 	return 0;
 }
 
