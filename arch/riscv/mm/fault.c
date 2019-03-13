@@ -36,15 +36,78 @@
  * problem, and then passes it off to one of the appropriate routines.
  */
 
+uint32_t shadow_tlb[256], shadow_tlb_phys_and_flags[256];
+
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 asmlinkage void vexriscv_mmu_map(uint32_t virt, uint32_t phys_and_flags, uint32_t location) {
    asm("");
    LOAD_VIRTUAL(0, 10, 0);
    LOAD_TLB(0, 12, 11);
+   shadow_tlb[location] = virt;
+   shadow_tlb_phys_and_flags[location] = phys_and_flags;
 }
-#pragma GCC pop_options
 
+asmlinkage void vexriscv_dcache_clear(uint32_t line) {
+	FLUSH_DCACHE_LINE(0, 10);
+}
+
+
+
+asmlinkage uint32_t direct_read(uint32_t addr) {
+	uint32_t value;
+	__asm__ __volatile__ (
+		"lw %0, 0x700(%1)"
+		: "=r" (value) :  "r" (addr));
+	return value;
+}
+
+asmlinkage uint32_t direct_read_n(uint32_t addr) {
+	uint32_t value;
+	__asm__ __volatile__ (
+		"lw %0, 0x600(%1)"
+		: "=r" (value) :  "r" (addr));
+	return value;
+}
+
+
+asmlinkage uint32_t direct_read_z(uint32_t addr) {
+	uint32_t value;
+	__asm__ __volatile__ (
+		"lw %0, 0(%1)"
+		: "=r" (value) :  "r" (addr));
+	return value;
+}
+
+asmlinkage uint32_t direct_read_m800(uint32_t addr) {
+	uint32_t value;
+	__asm__ __volatile__ (
+		"lw %0, -0x800(%1)"
+		: "=r" (value) :  "r" (addr));
+	return value;
+}
+
+
+asmlinkage uint32_t direct_read_m400(uint32_t addr) {
+	uint32_t value;
+	__asm__ __volatile__ (
+		"lw %0, -0x400(%1)"
+		: "=r" (value) :  "r" (addr));
+	return value;
+}
+
+
+
+asmlinkage uint32_t direct_read_400(uint32_t addr) {
+	uint32_t value;
+	__asm__ __volatile__ (
+		"lw %0, 0x400(%1)"
+		: "=r" (value) :  "r" (addr));
+	return value;
+}
+
+
+#pragma GCC pop_options
 
 uint32_t page_location = 0;
 uint32_t page_virt[PAGE_COUNT];
@@ -60,6 +123,8 @@ asmlinkage void do_page_fault(struct pt_regs *regs)
 	int code = SEGV_MAPERR;
 	unsigned char cause_text[30];
 	uint32_t sepc;
+	int i;
+	uint32_t a, b;
 
 	vm_fault_t fault;
 
@@ -233,6 +298,11 @@ DBGMSG("Good area :)");
 		}
 	}
       DBGMSG("going out to 0x%08X", regs->sepc);
+    for (i = 0; i < 256; i++) {
+    	if (shadow_tlb[i] == 0 && shadow_tlb_phys_and_flags[i] == 0)
+    		continue;
+    	DBGMSG("shadow tlb [%d] virt=%08x phys_and_flags=%08x", i, shadow_tlb[i], shadow_tlb_phys_and_flags[i]);
+    }
 	up_read(&mm->mmap_sem);
 	return;
 
@@ -246,6 +316,29 @@ bad_area:
 	/* User mode accesses just cause a SIGSEGV */
 	if (user_mode(regs)) {
 	DBGMSG("We are user, doing SIGSEGV");
+	//*((uint32_t*)0x5001e604) = 0xdeadbeef;
+	for (i = 0; i < 32; i+=4) {
+		DBGMSG("5001e6%02x == %08x c00136%02x == %08x", i, *((uint8_t*)(0x5001e600 + i)), i, *((uint32_t*)(0xc0013600 + i)));
+
+		DBGMSG("a (xb) = %08x %08x", direct_read(0x5001DF00 + i), direct_read(0xc0012f00 + i));
+		DBGMSG("a (nxb) = %08x", direct_read_n(0x5001E000 + i));
+		DBGMSG("a (zxb) = %08x", direct_read_z(0x5001E600 + i));
+		DBGMSG("a (ze0) = %08x", direct_read_z(0x5001E000 + i));
+
+		DBGMSG("a (m800) = %08x", direct_read_m800(0x5001EE00 + i));
+		DBGMSG("a (m400) = %08x", direct_read_m400(0x5001EA00 + i));
+
+		DBGMSG("a (5xb) = %08x", direct_read_400(0x5001E200 + i));
+
+		/*	
+		DBGMSG("500006%02x == %08x c002a6%02x == %08x", i, *((uint32_t*)(0x50000600 + i)), i, *((uint32_t*)(0xc002a600 + i)));
+		DBGMSG("500026%02x == %08x c002c6%02x == %08x", i, *((uint32_t*)(0x50002600 + i)), i, *((uint32_t*)(0xc002c600 + i)));
+		DBGMSG("500036%02x == %08x c002d6%02x == %08x", i, *((uint32_t*)(0x50003600 + i)), i, *((uint32_t*)(0xc002d600 + i)));
+		DBGMSG("5000d6%02x == %08x c00146%02x == %08x", i, *((uint32_t*)(0x5000d600 + i)), i, *((uint32_t*)(0xc0014600 + i)));
+		DBGMSG("5001df%02x == %08x c0463f%02x == %08x", i, *((uint32_t*)(0x5001df00 + i)), i, *((uint32_t*)(0xc0463f00 + i)));
+*/
+
+	}
 		do_trap(regs, SIGSEGV, code, addr, tsk);
 		return;
 	} else DBGMSG("We were not in user!!!");

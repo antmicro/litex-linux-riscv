@@ -25,6 +25,7 @@
  */
 
 extern void vexriscv_mmu_map(uint32_t virt, uint32_t phys_and_flags, uint32_t location);
+extern void vexriscv_dcache_clear(uint32_t line);
 
 
 static inline void local_flush_tlb_all(void)
@@ -34,13 +35,23 @@ int i ;
 	for (i = 0; i < 256; i++) {
 		vexriscv_mmu_map(0,0,i);
 	}
+	for (i = 0; i < 4096; i+=32)
+		vexriscv_dcache_clear(i);
 //    __asm__ __volatile__ ("sfence.vma" : : : "memory"); // TODO
 }
+
+extern uint32_t shadow_tlb[256];
 
 /* Flush one page from local TLB */
 static inline void local_flush_tlb_page(unsigned long addr)
 {
+int i;
 DBGMSG("Kernel tried to flush 0x%X", addr);
+	for ( i = 0; i < 256; i++)
+		if (shadow_tlb[i] == (((addr >> 12) & 0xFFFFF)))
+			vexriscv_mmu_map(0,0,i);
+	for (i = 0; i < 4096; i+=32)
+		vexriscv_dcache_clear(i);
 //	__asm__ __volatile__ ("sfence.vma %0" : : "r" (addr) : "memory");    // TODO
 }
 

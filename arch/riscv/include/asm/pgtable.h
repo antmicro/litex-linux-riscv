@@ -286,13 +286,13 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 	DBG();
 
 	DBGMSG("We are update_mmu_cache at %X, ptep=%X -> %X", address, (uint32_t)ptep, ptep ? ((uint32_t)pte_val(*ptep) >> 10) :0);
+	local_flush_tlb_page(address);
 
 	if (ptep) {
          	uint32_t page_addr = ((uint32_t)pte_val(*ptep) >> 10) ;
 		vexriscv_mmu_map((address >> 12) & 0xFFFFF, 0xF8000000 | page_addr, page_location++ % PAGE_COUNT);
 	}
 
-	local_flush_tlb_page(address);
 }
 
 #define __HAVE_ARCH_PTE_SAME
@@ -316,6 +316,7 @@ void flush_icache_pte(pte_t pte);
 #define r_type_insn(_f7, _rs2, _rs1, _f3, _rd, _opc) asm(".word (((" #_f7 ") << 25) | ((" #_rs2 ") << 20) | ((" #_rs1 ") << 15) | ((" #_f3 ") << 12) | ((" #_rd ") << 7) | ((" #_opc ") << 0))")
 #define LOAD_VIRTUAL(_rd, _rs1, _rs2 ) r_type_insn(0b0000000, _rs2, _rs1, 0b111, _rd, 0b0001111)
 #define LOAD_TLB(_rd, _rs1, _rs2 ) r_type_insn(0b0000001, _rs2, _rs1, 0b111, _rd, 0b0001111)
+#define FLUSH_DCACHE_LINE(_rd, _rs1) r_type_insn(0b0000000, 0b00000, _rs1, 0b101, _rd, 0b0001111)
 
 
 static inline void set_pte_at(struct mm_struct *mm,
