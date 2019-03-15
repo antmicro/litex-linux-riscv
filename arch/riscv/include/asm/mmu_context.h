@@ -91,7 +91,7 @@ static inline void switch_mm(struct mm_struct *prev,
 		 */
 		//DBGMSG("Changing sptbr from %X to %X", csr_read(sptbr), virt_to_pfn(next->pgd) | SATP_MODE);
 		csr_write(sptbr, virt_to_pfn(next->pgd) | SATP_MODE); // TODO
-		DBG();
+		//DBG();
 		local_flush_tlb_all();
 
 		flush_icache_deferred(next);

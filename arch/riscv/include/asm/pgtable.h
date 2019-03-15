@@ -283,9 +283,9 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 	 * Relying on flush_tlb_fix_spurious_fault would suffice, but
 	 * the extra traps reduce performance.  So, eagerly SFENCE.VMA.
 	 */
-	DBG();
+	//DBG();
 
-	DBGMSG("We are update_mmu_cache at %X, ptep=%X -> %X", address, (uint32_t)ptep, ptep ? ((uint32_t)pte_val(*ptep) >> 10) :0);
+	//DBGMSG("We are update_mmu_cache at %X, ptep=%X -> %X", address, (uint32_t)ptep, ptep ? ((uint32_t)pte_val(*ptep) >> 10) :0);
 	local_flush_tlb_page(address);
 
 	if (ptep) {
@@ -326,7 +326,7 @@ static inline void set_pte_at(struct mm_struct *mm,
 	uint32_t paddr = page_addr | (addr & 0xFFF);
 	uint32_t flags = 0xF8000000; // full righrs
 	int i;
-        DBGMSG("set_pte: vaddr = 0x%08X, paddr = 0x%08X, zone/page_id = %X   pte_val(pte_val) = %X  %s", addr, paddr,  pte_pfn(pteval), pte_val(pteval), pte_exec(pteval) ? "EXECUTABLE" : "NON-EXECUTABLE");
+     //   DBGMSG("set_pte: vaddr = 0x%08X, paddr = 0x%08X, zone/page_id = %X   pte_val(pte_val) = %X  %s", addr, paddr,  pte_pfn(pteval), pte_val(pteval), pte_exec(pteval) ? "EXECUTABLE" : "NON-EXECUTABLE");
 
        
 	if (pte_present(pteval) && pte_exec(pteval)) {

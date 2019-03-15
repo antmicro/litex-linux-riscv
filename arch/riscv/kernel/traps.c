@@ -26,6 +26,8 @@
 #include <asm/processor.h>
 #include <asm/ptrace.h>
 #include <asm/csr.h>
+#include <utils/puts.h>
+
 
 int show_unhandled_signals = 1;
 
@@ -83,6 +85,7 @@ void do_trap(struct pt_regs *regs, int signo, int code,
 static void do_trap_error(struct pt_regs *regs, int signo, int code,
 	unsigned long addr, const char *str)
 {
+	DBGMSG(" code=%d scause=%08x sepc=%08x sstatus=%08x ra=%08x", code, regs->scause, regs->sepc, regs->sstatus, regs->ra);
 	if (user_mode(regs)) {
 		do_trap(regs, signo, code, addr, current);
 	} else {

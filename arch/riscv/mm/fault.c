@@ -168,7 +168,7 @@ asmlinkage void do_page_fault(struct pt_regs *regs)
 
 	}
 
-	MSG(1, "Doing page fault @ 0x%08X, cause = 0x%X [%s], sepc = 0x%08X!", addr, cause, cause_text, sepc);
+	//MSG(1, "Doing page fault @ 0x%08X, cause = 0x%X [%s], sepc = 0x%08X!", addr, cause, cause_text, sepc);
 
 	tsk = current;
 	mm = tsk->mm;
@@ -183,7 +183,7 @@ asmlinkage void do_page_fault(struct pt_regs *regs)
 	 * nothing more.
 	 */
 	if (unlikely((addr >= VMALLOC_START) && (addr <= VMALLOC_END))) {
-	DBGMSG("vmalloc_fault because addr=%X >= %X and <= %X!", addr, VMALLOC_START, VMALLOC_END);
+	//DBGMSG("vmalloc_fault because addr=%X >= %X and <= %X!", addr, VMALLOC_START, VMALLOC_END);
 		goto vmalloc_fault;
 		}
 
@@ -220,7 +220,7 @@ retry:
 	 * we can handle it.
 	 */
 good_area:
-DBGMSG("Good area :)");
+//DBGMSG("Good area :)");
 	code = SEGV_ACCERR;
 
 	switch (cause) {
@@ -246,7 +246,7 @@ DBGMSG("Good area :)");
 	 * make sure we exit gracefully rather than endlessly redo
 	 * the fault.
 	 */
-	DBGMSG("Handling vaddr = %X, flags = %X...", addr, flags);
+	//DBGMSG("Handling vaddr = %X, flags = %X...", addr, flags);
 	fault = handle_mm_fault(vma, addr, flags);
 
 	/*
@@ -297,12 +297,14 @@ DBGMSG("Good area :)");
 			goto retry;
 		}
 	}
-      DBGMSG("going out to 0x%08X", regs->sepc);
+      //DBGMSG("going out to 0x%08X", regs->sepc);
+      #if 0
     for (i = 0; i < 256; i++) {
     	if (shadow_tlb[i] == 0 && shadow_tlb_phys_and_flags[i] == 0)
     		continue;
     	DBGMSG("shadow tlb [%d] virt=%08x phys_and_flags=%08x", i, shadow_tlb[i], shadow_tlb_phys_and_flags[i]);
     }
+    #endif
 	up_read(&mm->mmap_sem);
 	return;
 
@@ -381,17 +383,17 @@ do_sigbus:
 
 vmalloc_fault:
 	{
-	DBG();
+	//DBG();
 		pgd_t *pgd, *pgd_k;
 		pud_t *pud, *pud_k;
 		p4d_t *p4d, *p4d_k;
 		pmd_t *pmd, *pmd_k;
 		pte_t *pte_k;
 		int index;
-DBG();
+//DBG();
 		if (user_mode(regs))
 			goto bad_area;
-DBG();
+//DBG();
 		/*
 		 * Synchronize this task's top level page-table
 		 * with the 'reference' page table.
@@ -408,27 +410,27 @@ DBG();
 		pgd = (pgd_t *)pfn_to_virt(csr_read(sptbr)) + index;
 		pgd_k = init_mm.pgd + index;
 
-DBG();
+//DBG();
 		if (!pgd_present(*pgd_k))
 			goto no_context;
-DBG();
+//DBG();
 		set_pgd(pgd, *pgd_k);
 
-DBG();
+//DBG();
 		p4d = p4d_offset(pgd, addr);
 		p4d_k = p4d_offset(pgd_k, addr);
-DBG();
+//DBG();
 		if (!p4d_present(*p4d_k))
 			goto no_context;
 
-DBG();
+//DBG();
 		pud = pud_offset(p4d, addr);
-DBG();
+//DBG();
 		pud_k = pud_offset(p4d_k, addr);
 		if (!pud_present(*pud_k))
 			goto no_context;
 
-DBG();
+//DBG();
 		/*
 		 * Since the vmalloc area is global, it is unnecessary
 		 * to copy individual PTEs
@@ -439,7 +441,7 @@ DBG();
 			goto no_context;
 		set_pmd(pmd, *pmd_k);
 
-DBG();
+//DBG();
 		/*
 		 * Make sure the actual PTE exists as well to
 		 * catch kernel vmalloc-area accesses to non-mapped
@@ -451,7 +453,7 @@ DBG();
 			goto no_context;
 
 		uint32_t paddr = (((uint32_t)pte_val(*pte_k) >> 10) & 0xFFFFF);
-		DBGMSG("Adding kernel mapping 0x%08X -> 0x%08X", addr, paddr << 12);
+		//DBGMSG("Adding kernel mapping 0x%08X -> 0x%08X", addr, paddr << 12);
 		vexriscv_mmu_map((addr >> 12) & 0xFFFFF, paddr | 0xF8000000, page_location++ % PAGE_COUNT);
 		return;
 	}

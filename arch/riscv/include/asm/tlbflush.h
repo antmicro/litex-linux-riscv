@@ -30,7 +30,7 @@ extern void vexriscv_dcache_clear(uint32_t line);
 
 static inline void local_flush_tlb_all(void)
 {
-DBGMSG("Flushing whole TLB!");
+//DBGMSG("Flushing whole TLB!");
 int i ;
 	for (i = 0; i < 256; i++) {
 		vexriscv_mmu_map(0,0,i);
@@ -46,7 +46,7 @@ extern uint32_t shadow_tlb[256];
 static inline void local_flush_tlb_page(unsigned long addr)
 {
 int i;
-DBGMSG("Kernel tried to flush 0x%X", addr);
+//DBGMSG("Kernel tried to flush 0x%X", addr);
 	for ( i = 0; i < 256; i++)
 		if (shadow_tlb[i] == (((addr >> 12) & 0xFFFFF)))
 			vexriscv_mmu_map(0,0,i);
