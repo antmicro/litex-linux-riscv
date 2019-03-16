@@ -1531,7 +1531,7 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
 		if (file && is_file_hugepages(file))
 			vm_flags |= VM_NORESERVE;
 	}
-DBGMSG("mmap addr=%X len=%d pgoff=%d", addr, len, pgoff);
+//DBGMSG("mmap addr=%X len=%d pgoff=%d", addr, len, pgoff);
 	addr = mmap_region(file, addr, len, vm_flags, pgoff, uf);
 	if (!IS_ERR_VALUE(addr) &&
 	    ((vm_flags & VM_LOCKED) ||

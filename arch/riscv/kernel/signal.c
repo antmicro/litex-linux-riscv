@@ -211,7 +211,7 @@ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
 	sigset_t *oldset = sigmask_to_save();
 	int ret;
 
-        DBGMSG("We are in handle_signal. regs->a0 = %X  regs->scause = %X", regs->a0, regs->scause);
+        //DBGMSG("We are in handle_signal. regs->a0 = %X  regs->scause = %X", regs->a0, regs->scause);
 
 	/* Are we from a system call? */
 	if (regs->scause == EXC_SYSCALL) {
