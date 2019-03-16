@@ -89,5 +89,16 @@
 			interrupts = <0x2>;
 			interrupt-parent = <0x3>;
 		};
+
+		mac0: mac@e0009800 {
+			compatible = "litex,liteeth";
+			reg = <0x0 0xe0009800 0x0 0x7c
+				0x0 0xe0009000 0x0 0x0a
+				0x0 0x30000000 0x0 0x2000>;
+			interrupts = <3>;
+			interrupt-parent = <0x3>;
+			tx-fifo-depth = <2>;
+			rx-fifo-depth = <2>;
+		};
 	};
 };
