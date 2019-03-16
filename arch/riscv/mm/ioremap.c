@@ -51,7 +51,7 @@ DBG();
 	DBG();
 	if (!area) {
 	MSG(2, "**** NO AREA!!!!");
-	 if ((addr & 0xE0000000) == 0xE0000000) {
+	 if ((addr & 0xE0000000) == 0xE0000000 || (addr & 0xF0000000) == 0xD0000000) {
 	 MSG(1, "Doing a hack for IO!");
 	 return (void __iomem*)orig_addr;
 	 }
@@ -84,7 +84,7 @@ DBG();
  */
 void __iomem *ioremap(phys_addr_t offset, unsigned long size)
 {
-	if ((offset & 0xF0000000) == 0xE0000000) return (void __iomem *)offset;
+	if ((offset & 0xF0000000) == 0xE0000000 || (offset & 0xF0000000) == 0xD0000000) return (void __iomem *)offset;
 DBGMSG("Doing a ioremap at 0x%08X of size %lu", (uint32_t)offset, size);
 	return __ioremap_caller(offset, size, PAGE_KERNEL,
 		__builtin_return_address(0));

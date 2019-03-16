@@ -16,6 +16,8 @@
 
 #include <linux/iopoll.h>
 
+#include <utils/puts.h>
+
 #define DRV_NAME	"liteeth"
 #define DRV_VERSION	"0.1"
 
@@ -68,11 +70,12 @@ struct liteeth {
 
 /* Helper routines for accessing MMIO over a wishbone bus.
  * Each 32 bit memory location contains a single byte of data, stored
- * big endian
+ * little endian
  */
 static inline void outreg8(u8 val, void __iomem *addr)
 {
-	iowrite32be(val, addr);
+	// DBGMSG("[%08x] <= %02x", (uint32_t)addr, val);
+	iowrite32(val, addr);
 }
 
 static inline void outreg16(u16 val, void __iomem *addr)
@@ -83,7 +86,7 @@ static inline void outreg16(u16 val, void __iomem *addr)
 
 static inline u8 inreg8(void __iomem *addr)
 {
-	return ioread32be(addr);
+	return ioread32(addr);
 }
 
 static inline u32 inreg32(void __iomem *addr)
@@ -132,6 +135,7 @@ static void liteeth_tx_done(struct net_device *netdev)
 
 static irqreturn_t liteeth_interrupt(int irq, void *dev_id)
 {
+	//DBG();
 	struct net_device *netdev = dev_id;
 	struct liteeth *priv = netdev_priv(netdev);
 	u8 reg;
@@ -211,12 +215,13 @@ static int liteeth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	txbuffer = priv->tx_base + priv->tx_slot * LITEETH_BUFFER_SIZE;
+	//DBGMSG("txbuffer %08x base %08x skb->len %d", (uint32_t)txbuffer, (uint32_t)priv->base, skb->len);
 	memcpy_fromio(txbuffer, skb->data, skb->len);
 	outreg8(priv->tx_slot, priv->base + LITEETH_READER_SLOT);
 	outreg16(skb->len, priv->base + LITEETH_READER_LENGTH);
 
 	ret = readb_poll_timeout_atomic(priv->base + LITEETH_READER_READY,
-			val, !val, 5, 1000);
+			val, val, 5, 1000);
 	if (ret == -ETIMEDOUT) {
 		netdev_err(netdev, "LITEETH_READER_READY timed out\n");
 		goto drop;
