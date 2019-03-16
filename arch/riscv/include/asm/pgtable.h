@@ -289,8 +289,14 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 	local_flush_tlb_page(address);
 
 	if (ptep) {
-         	uint32_t page_addr = ((uint32_t)pte_val(*ptep) >> 10) ;
-		vexriscv_mmu_map((address >> 12) & 0xFFFFF, 0xF8000000 | page_addr, page_location++ % PAGE_COUNT);
+        uint32_t page_addr = ((uint32_t)pte_val(*ptep) >> 10) ;
+
+        uint32_t flags = 0x98000000;
+
+        if (pte_exec(*ptep)) flags |= (1 << 30);
+        if (pte_write(*ptep)) flags |= (1 << 29);
+        //DBGMSG("%08x %08x %08x", address, flags, (uint32_t)pte_val(*ptep));
+		vexriscv_mmu_map((address >> 12) & 0xFFFFF, flags | page_addr, page_location++ % PAGE_COUNT);
 	}
 
 }

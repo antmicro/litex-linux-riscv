@@ -387,7 +387,7 @@ static __always_inline void *__kmalloc_node(size_t size, gfp_t flags, int node)
 
 static __always_inline void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t flags, int node)
 {
-DBG();
+//DBG();
 	return kmem_cache_alloc(s, flags);
 }
 #endif
@@ -425,11 +425,11 @@ kmem_cache_alloc_node_trace(struct kmem_cache *s,
 			      int node, size_t size)
 {
 void *ret;
-DBG();
+//DBG();
 	ret = kmem_cache_alloc_node(s, gfpflags, node);
-DBGMSG("ret = %X", (uint32_t)ret);
+//DBGMSG("ret = %X", (uint32_t)ret);
 	kasan_kmalloc(s, ret, size, gfpflags); // <-- this does nothing
-	DBG();
+//	DBG();
 	return ret;
 }
 #endif /* CONFIG_TRACING */
@@ -545,13 +545,13 @@ static __always_inline unsigned int kmalloc_size(unsigned int n)
 
 static __always_inline void *kmalloc_node(size_t size, gfp_t flags, int node)
 {
-DBG();
+//DBG();
 #ifndef CONFIG_SLOB
-DBG();
+//DBG();
 	if (__builtin_constant_p(size) &&
 		size <= KMALLOC_MAX_CACHE_SIZE && !(flags & GFP_DMA)) {
 		unsigned int i = kmalloc_index(size);
-DBG();
+//DBG();
 if (i == 0) MSG(2, "i = %u", i);
 		if (!i)
 			return ZERO_SIZE_PTR;
@@ -560,7 +560,7 @@ if (i == 0) MSG(2, "i = %u", i);
 						flags, node, size);
 	}
 #endif
-DBG();
+//DBG();
 	return __kmalloc_node(size, flags, node);
 }
 
@@ -724,7 +724,7 @@ static inline void *kzalloc(size_t size, gfp_t flags)
  */
 static inline void *kzalloc_node(size_t size, gfp_t flags, int node)
 {
-DBG();
+//DBG();
 	return kmalloc_node(size, flags | __GFP_ZERO, node);
 }
 

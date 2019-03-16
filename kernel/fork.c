@@ -2180,7 +2180,7 @@ long _do_fork(unsigned long clone_flags,
 			ptrace_event_pid(PTRACE_EVENT_VFORK_DONE, pid);
 	}
 	put_pid(pid);
-DBGMSG("returning with nr=%d", nr);
+//DBGMSG("returning with nr=%d", nr);
 	return nr;
 }
 
