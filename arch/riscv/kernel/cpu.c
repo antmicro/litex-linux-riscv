@@ -93,6 +93,7 @@ static int c_show(struct seq_file *m, void *v)
 	if (!of_property_read_string(node, "compatible", &compat)
 	    && strcmp(compat, "riscv"))
 		seq_printf(m, "uarch\t: %s\n", compat);
+	seq_puts(m, "VexRiscv\n");
 	seq_puts(m, "\n");
 
 	return 0;
