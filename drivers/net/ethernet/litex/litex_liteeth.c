@@ -117,7 +117,8 @@ static int liteeth_rx(struct net_device *netdev)
 
 	/* Ensure alignemnt of the ip header within the skb */
 	skb_reserve(skb, NET_IP_ALIGN);
-
+	if (len == 0 || len > 2048)
+		return NET_RX_DROP;
 	data = skb_put(skb, len);
 	memcpy_fromio(data, priv->rx_base + rx_slot * LITEETH_BUFFER_SIZE, len);
 	skb->protocol = eth_type_trans(skb, netdev);
