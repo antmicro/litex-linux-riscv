@@ -231,7 +231,7 @@ static int liteeth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	outreg8(1, priv->base + LITEETH_READER_START);
 
 	priv->tx_slot = (priv->tx_slot + 1) % priv->num_tx_slots;
-
+	dev_kfree_skb_any(skb);
 	return NETDEV_TX_OK;
 drop:
 	/* Drop the packet */
