@@ -287,11 +287,27 @@ handle_syscall_trace_exit:
 END(handle_exception)
 
 ENTRY(handle_exception_m)
-csrw mscratch, t0
-csrr t0, stvec
-csrw mepc, t0
-csrr t0, mscratch
-mret
+	csrw mscratch, t0
+
+# check Machine External Interrupt
+	csrr t0, mip
+	srli t0, t0, 11
+	andi t0, t0, 0x1
+	beqz t0, 1f
+
+# deletage Machine External Interrupt
+	li t0, 0x800
+	csrc mip, t0
+
+	li t0, 0x200
+	csrs sip, t0
+	csrr t0, mscratch
+	mret
+1:
+	csrr t0, stvec
+	csrw mepc, t0
+	csrr t0, mscratch
+	mret
 END(handle_exception_m)
 
 ENTRY(ret_from_fork)

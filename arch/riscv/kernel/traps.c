@@ -274,6 +274,9 @@ void __init mtrap_init(void)
     (1U << CAUSE_USER_ECALL);
   csr_write(mideleg, interrupts);
   csr_write(medeleg, exceptions);
+
+  /* Enable Machine External Interrupt */
+  csr_write(mie, (1 << 11));
 }
 
 
