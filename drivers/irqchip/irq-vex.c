@@ -15,7 +15,7 @@
 #include <linux/spinlock.h>
 #include <utils/puts.h>
 
-static void vex_enable_irq(int num, int enable)
+void vex_enable_irq(int num, int enable)
 {
     u32 mask = csr_read(0xBC0);
     //DBGMSG("vexirq %s irq %d", enable? "enable" : "disable",  num);
@@ -86,7 +86,9 @@ static void vex_handle_irq(struct pt_regs *regs)
         //DBGMSG("vexirq handle %d", hwirq);
         vex_enable_irq(hwirq, 0);
 
-		if (unlikely(irq <= 0))
+		if (hwirq == 1)
+			riscv_timer_interrupt();
+		else if (unlikely(irq <= 0))
 			pr_warn_ratelimited("can't find mapping for hwirq %lu\n",
 					hwirq);
 		else

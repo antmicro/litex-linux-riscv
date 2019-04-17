@@ -25,6 +25,8 @@
  */
 #define TIMER0_BASE 0xe0002800
 
+void vex_enable_irq(int num, int enable);
+
 static int riscv_clock_next_event(unsigned long delta,
 		struct clock_event_device *ce)
 {
@@ -39,7 +41,8 @@ static int riscv_clock_next_event(unsigned long delta,
 	timer[3] = (delta      ) & 0xFF;
 	timer[16] = 1; //enable event
 	timer[8] = 1; //enable timer
-	csr_set(sie, SIE_STIE); //enable timer interrupt (S-mode)
+	// csr_set(sie, SIE_STIE); //enable timer interrupt (S-mode)
+	vex_enable_irq(1, 1);
 	return 0;
 }
 
@@ -90,7 +93,8 @@ static int riscv_timer_starting_cpu(unsigned int cpu)
 
 static int riscv_timer_dying_cpu(unsigned int cpu)
 {
-	csr_clear(sie, SIE_STIE);
+	vex_enable_irq(1, 0);
+	// csr_clear(sie, SIE_STIE);
 	return 0;
 }
 
@@ -101,7 +105,8 @@ void riscv_timer_interrupt(void)
 	timer[16] = 0;
 
 	struct clock_event_device *evdev = this_cpu_ptr(&riscv_clock_event);
-	csr_clear(sie, SIE_STIE);
+	vex_enable_irq(1, 0);
+	// csr_clear(sie, SIE_STIE);
 	evdev->event_handler(evdev);
 }
 
