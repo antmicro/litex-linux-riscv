@@ -11,7 +11,7 @@
 	};
 
 	chosen {
-		bootargs = "earlycon mem=128M@0x40000000 rootwait console=ttyLX0,115200 root=/dev/ram0 init=/sbin/init swiotlb=32";
+		bootargs = "earlycon mem=256M@0x40000000 rootwait console=ttyLX0,115200 root=/dev/ram0 init=/sbin/init swiotlb=32";
 		stdout-path = "/soc/serial0@e0001800:115200";
 		linux,initrd-start = <0xc2000000>;
 		linux,initrd-end = <0xc2800000>; // max 8MB gzip'd ramdisk
@@ -65,7 +65,7 @@
 
 	memory@c0000000 {
 		device_type = "memory";
-		reg = <0x0 0xc0000000 0x1 0x08000000>;
+		reg = <0x0 0xc0000000 0x1 0x10000000>;
 	};
 
 	soc {
