@@ -8,7 +8,7 @@
 #define EVENTPENDING 3
 #define EVENTENABLE 4
 
-#if 1
+#if 0
 #define MSG(n, ...) special_printf(n,__FILE__, __LINE__, (char*)__func__, __VA_ARGS__)
 #define DBG() MSG(3, "")
 #define DBGMSG(...) MSG(3, __VA_ARGS__)
