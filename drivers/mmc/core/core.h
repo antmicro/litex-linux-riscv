@@ -14,6 +14,8 @@
 #include <linux/delay.h>
 #include <linux/sched.h>
 
+#define PRDEBUGIZE(x) {pr_debug(">>> " #x "\n"); x; pr_debug("<<<\n");}
+
 struct mmc_host;
 struct mmc_card;
 struct mmc_request;

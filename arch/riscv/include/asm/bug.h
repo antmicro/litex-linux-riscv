@@ -46,6 +46,7 @@ typedef u32 bug_insn_t;
 
 #define BUG()							\
 do {								\
+	printk("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
 	__asm__ __volatile__ (					\
 		"1:\n\t"					\
 			"ebreak\n"				\

@@ -40,13 +40,13 @@ int mmc_app_cmd(struct mmc_host *host, struct mmc_card *card)
 		cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R1 | MMC_CMD_BCR;
 	}
 
-	err = mmc_wait_for_cmd(host, &cmd, 0);
+	PRDEBUGIZE(err = mmc_wait_for_cmd(host, &cmd, 0);)
 	if (err)
-		return err;
+		PRDEBUGIZE(return err;)
 
 	/* Check that card supported application commands */
 	if (!mmc_host_is_spi(host) && !(cmd.resp[0] & R1_APP_CMD))
-		return -EOPNOTSUPP;
+		PRDEBUGIZE(return -EOPNOTSUPP;)
 
 	return 0;
 }

@@ -121,9 +121,9 @@ static int mmc_decode_csd(struct mmc_card *card)
 
 		e = UNSTUFF_BITS(resp, 47, 3);
 		m = UNSTUFF_BITS(resp, 62, 12);
+		csd->read_blkbits = UNSTUFF_BITS(resp, 80, 4);
 		csd->capacity	  = (1 + m) << (e + 2);
 
-		csd->read_blkbits = UNSTUFF_BITS(resp, 80, 4);
 		csd->read_partial = UNSTUFF_BITS(resp, 79, 1);
 		csd->write_misalign = UNSTUFF_BITS(resp, 78, 1);
 		csd->read_misalign = UNSTUFF_BITS(resp, 77, 1);
@@ -931,7 +931,7 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 
 	WARN_ON(!host->claimed);
 retry:
-	err = mmc_sd_get_cid(host, ocr, cid, &rocr);
+	PRDEBUGIZE(err = mmc_sd_get_cid(host, ocr, cid, &rocr);)
 	if (err)
 		return err;
 
@@ -1247,14 +1247,15 @@ int mmc_attach_sd(struct mmc_host *host)
 {
 	int err;
 	u32 ocr, rocr;
+	pr_debug(">");
 
 	WARN_ON(!host->claimed);
 
-	err = mmc_send_app_op_cond(host, 0, &ocr);
+	PRDEBUGIZE(err = mmc_send_app_op_cond(host, 0, &ocr););
 	if (err)
 		return err;
 
-	mmc_attach_bus(host, &mmc_sd_ops);
+	PRDEBUGIZE(mmc_attach_bus(host, &mmc_sd_ops););
 	if (host->ocr_avail_sd)
 		host->ocr_avail = host->ocr_avail_sd;
 
@@ -1262,14 +1263,14 @@ int mmc_attach_sd(struct mmc_host *host)
 	 * We need to get OCR a different way for SPI.
 	 */
 	if (mmc_host_is_spi(host)) {
-		mmc_go_idle(host);
+		PRDEBUGIZE(mmc_go_idle(host););
 
-		err = mmc_spi_read_ocr(host, 0, &ocr);
+		PRDEBUGIZE(err = mmc_spi_read_ocr(host, 0, &ocr););
 		if (err)
 			goto err;
 	}
 
-	rocr = mmc_select_voltage(host, ocr);
+	PRDEBUGIZE(rocr = mmc_select_voltage(host, ocr););
 
 	/*
 	 * Can we support the voltage(s) of the card(s)?

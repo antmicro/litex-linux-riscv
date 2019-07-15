@@ -1,3 +1,4 @@
+#define DEBUG
 /*
  *  linux/drivers/mmc/core/core.c
  *
@@ -1447,6 +1448,8 @@ u32 mmc_select_voltage(struct mmc_host *host, u32 ocr)
 		"card claims to support voltages below defined range\n");
 		ocr &= ~0x7F;
 	}
+
+	pr_debug("%s: ocr=0x%08x\n", mmc_hostname(host), ocr);
 
 	ocr &= host->ocr_avail;
 	if (!ocr) {

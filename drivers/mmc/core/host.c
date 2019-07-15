@@ -1,3 +1,4 @@
+#define DEBUG
 /*
  *  linux/drivers/mmc/core/host.c
  *

@@ -1090,6 +1090,7 @@ int mmc_attach_sdio(struct mmc_host *host)
 	int err, i, funcs;
 	u32 ocr, rocr;
 	struct mmc_card *card;
+	pr_debug(">");
 
 	WARN_ON(!host->claimed);
 
@@ -1102,6 +1103,7 @@ int mmc_attach_sdio(struct mmc_host *host)
 		host->ocr_avail = host->ocr_avail_sdio;
 
 
+	pr_debug("> mmc_select_voltage");
 	rocr = mmc_select_voltage(host, ocr);
 
 	/*

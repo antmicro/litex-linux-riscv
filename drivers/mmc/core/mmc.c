@@ -2190,6 +2190,7 @@ int mmc_attach_mmc(struct mmc_host *host)
 {
 	int err;
 	u32 ocr, rocr;
+	pr_debug(">");
 
 	WARN_ON(!host->claimed);
 
@@ -2214,6 +2215,7 @@ int mmc_attach_mmc(struct mmc_host *host)
 			goto err;
 	}
 
+	pr_debug("> mmc_select_voltage");
 	rocr = mmc_select_voltage(host, ocr);
 
 	/*
