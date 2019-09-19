@@ -1,0 +1,49 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * LiteX-based System on Chip
+ *
+ * Copyright (C) 2019 Antmicro Ltd <www.antmicro.com>
+ */
+
+/dts-v1/;
+/ {
+	compatible = "opencores,or1ksim";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	interrupt-parent = <&pic>;
+
+	aliases {
+		serial0 = &serial0;
+	};
+
+	chosen {
+		bootargs = "console=liteuart";
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x00000000 0x10000000>;
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu@0 {
+			compatible = "opencores,or1200-rtlsvn481";
+			reg = <0>;
+			clock-frequency = <100000000>;
+		};
+	};
+
+	pic: pic {
+		compatible = "opencores,or1k-pic";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	serial0: serial@e0001800 {
+		device_type = "serial";
+		compatible = "litex,liteuart";
+		reg = <0xe0001800 0x100>;
+	};
+};
