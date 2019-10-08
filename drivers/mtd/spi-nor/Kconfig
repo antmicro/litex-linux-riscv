@@ -128,4 +128,11 @@ config SPI_FLASH_LITEX
 	help
 	  Generic SPI Flash driver for LiteX
 
+config SPI_FLASH_QUAD_LITEX
+	tristate "LiteX SPI Flash Quad support"
+	depends on OF
+	depends on HAS_IOMEM
+	help
+	  Generic SPI Flash Quad driver for LiteX
+
 endif # MTD_SPI_NOR
