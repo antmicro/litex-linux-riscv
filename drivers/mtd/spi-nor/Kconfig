@@ -120,4 +120,12 @@ config SPI_STM32_QUADSPI
 	  This enables support for the STM32 Quad SPI controller.
 	  We only connect the NOR to this controller.
 
+config SPI_FLASH_LITEX
+	tristate "LiteX SPI Flash support"
+	depends on OF
+	depends on HAS_IOMEM
+	depends on LITEX_SOC_CONTROLLER
+	help
+	  Generic SPI Flash driver for LiteX
+
 endif # MTD_SPI_NOR
