@@ -999,3 +999,10 @@ config MMC_SDHCI_AM654
 	  If you have a controller with this interface, say Y or M here.
 
 	  If unsure, say N.
+
+config MMC_LITEX
+	tristate "Support for the MMC Controller in LiteX SOCs" 
+	depends on OF 
+	help 
+	  Generic MCC driver for LiteX
+
