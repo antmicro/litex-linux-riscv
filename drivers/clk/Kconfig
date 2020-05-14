@@ -290,6 +290,12 @@ config COMMON_CLK_BD718XX
 	  This driver supports ROHM BD71837 and ROHM BD71847
 	  PMICs clock gates.
 
+config COMMON_CLK_LITEX
+	tristate "LiteX Clock control support"
+	depends on COMMON_CLK && OF && LITEX_SOC_CONTROLLER
+	help
+	  Clock control support for LiteX SoC builder, utilising MMCM unit and DRP registers
+
 source "drivers/clk/actions/Kconfig"
 source "drivers/clk/bcm/Kconfig"
 source "drivers/clk/hisilicon/Kconfig"
