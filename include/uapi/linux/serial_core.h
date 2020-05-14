@@ -284,4 +284,7 @@
 /* RDA UART */
 #define PORT_RDA	118
 
+/* LiteUART */
+#define PORT_LITEUART	119
+
 #endif /* _UAPILINUX_SERIAL_CORE_H */
